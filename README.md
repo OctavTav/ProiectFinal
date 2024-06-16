@@ -1,2 +1,2 @@
-# ProiectFinal\
+# ProiectFinal
 First row
