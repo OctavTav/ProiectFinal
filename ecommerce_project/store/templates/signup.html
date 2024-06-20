@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Create a new account
+{% end-block %}
+
+{% block content %}
+<div>
+    {% if not form.is_valid %}
+    <div class="mx-auto">
+        <br>
+        <h1 class="product_title text-center">
+           Create a new account
+        </h1>
+        <br>
+        <div class="col-9 col-sm-9 col-md-6 col-lg-5 mx-auto bg-light">
+            <br>
+            <p>Enter the following information to create a new account</p>
+            <form action="post">
+                {% csrd_token %}
+                <p>{{form}}</p>
+                <button type="submit" name="button" class="btn btn-secondary">Sign Up</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+        <div class="mx-auto">
+            <br>
+            <h1 class="product_title text-center">
+                Account created successfully!
+            </h1>
+        </div>
+        <div>
+            <p>
+                Dear Customer,
+                <br>
+                The account has been created and it is ready to be used.
+                <br>
+                <a href="{% url 'home' %}">Happy shopping!</a>
+            </p>
+        </div>
+</div>
+{% end-block %}

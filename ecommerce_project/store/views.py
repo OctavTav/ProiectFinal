@@ -2,6 +2,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Category, Product, Cart, CartItem
 from django.http import HttpResponse
+from django.contrib.auth.models import Group, User
+# from .forms import SingUpForm
+import stripe
+from django.conf import settings
 
 def home(request, category_slug=None):
     category_page = None
@@ -53,7 +57,22 @@ def cart_detail(request, total=0, counter=0, cart_items=0):
     except ObjectDoesNotExist:
         pass
 
-    return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter))
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    stripe_total = int(total * 100)
+    description = "E-Store - New Order"
+    data_key = settings.STRIPE_PUBLISHABLE_KEY
+    if request.method == 'POST':
+        # print(request.POST) # check to see if billing info is displayed after payment
+        try:
+            token = request.POST['stripeToken']
+            email = request.POST['stripeEmail']
+            customer = stripe.Customer.create(email=email, source=token)
+            charge = stripe.Charge.create(amount=stripe_total, currency='usd',description=description, customer=customer.id)
+        except stripe.error.CardError as e:
+            return False, e
+
+
+    return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter, data_key=data_key, stripe_total=stripe_total, description=description))
 
 def cart_remove(request, product_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -73,3 +92,16 @@ def cart_remove_product(request, product_id):
     cart_item = CartItem.objects.get(product=product, cart=cart)
     cart_item.delete()
     return redirect('cart_detail')
+
+# def signupView(request):
+#     if request.method == 'POST':
+#         form = SingUpForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             username = form.cleaned_data.get('username')
+#             signup_user = User.objects.get(username-username)
+#             customer_group = Group.objects.get(name='Customer')
+#             customer_group.user_set.add(signup_user)
+#     else:
+#         form = SingUpForm()
+#     return render(request, 'signup.html', {'form':form})

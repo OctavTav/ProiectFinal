@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
+    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +66,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'store.context_processors.menu_links',
-                'store.context_processors.counter'
+                'store.context_processors.counter',
+
             ],
         },
     },
@@ -124,6 +126,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+# you need to create an account on stripe site
+# these keys are unique to each account
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51PToGM07iTedKWd2lEvll5tUgrzQq4Gm0aoOxrRBokdABtfMwP2c0zVu4tVfPDuTeUA27By18Anb0zSt5wyQ8QWg00QM9tFQEc'
+STRIPE_SECRET_KEY = 'sk_test_51PToGM07iTedKWd2SlM6TfPplBM0jzGiCumlSqJgxRnatqKB1Lejnkjzf26x1vEFfpCfVrELGVNLKzI1dOYMXVKb00cCkc1sMu'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
