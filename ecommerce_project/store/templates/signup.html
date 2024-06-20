@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}
 Create a new account
-{% end-block %}
+{% endblock %}
 
 {% block content %}
 <div>
@@ -17,7 +17,7 @@ Create a new account
             <br>
             <p>Enter the following information to create a new account</p>
             <form action="post">
-                {% csrd_token %}
+                {% csrf_token %}
                 <p>{{form}}</p>
                 <button type="submit" name="button" class="btn btn-secondary">Sign Up</button>
             </form>
@@ -39,5 +39,6 @@ Create a new account
                 <a href="{% url 'home' %}">Happy shopping!</a>
             </p>
         </div>
+    {% endif %}
 </div>
-{% end-block %}
+{% endblock %}

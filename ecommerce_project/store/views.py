@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Category, Product, Cart, CartItem, Order, OrderItem
 from django.http import HttpResponse
 from django.contrib.auth.models import Group, User
-# from .forms import SingUpForm
+from .forms import SingUpForm
 import stripe
 from django.conf import settings
 
@@ -147,20 +147,20 @@ def cart_remove_product(request, product_id):
     cart_item.delete()
     return redirect('cart_detail')
 
-# def signupView(request):
-#     if request.method == 'POST':
-#         form = SingUpForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             username = form.cleaned_data.get('username')
-#             signup_user = User.objects.get(username-username)
-#             customer_group = Group.objects.get(name='Customer')
-#             customer_group.user_set.add(signup_user)
-#     else:
-#         form = SingUpForm()
-#     return render(request, 'signup.html', {'form':form})
-
 def thanks_page(request, order_id):
     if order_id:
         customer_order = get_object_or_404(Order, id=order_id)
     return render(request, 'thank_you.html', {'customer_order':customer_order})
+
+def signupView(request):
+    if request.method == 'POST':
+        form = SingUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            signup_user = User.objects.get(usernam=-username)
+            customer_group = Group.objects.get(name='Customer')
+            customer_group.user_set.add(signup_user)
+    else:
+        form = SingUpForm()
+    return render(request, 'signup.html', {'form':form})
