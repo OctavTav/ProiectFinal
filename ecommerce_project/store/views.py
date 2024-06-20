@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Category, Product, Cart, CartItem
+from .models import Category, Product, Cart, CartItem, Order, OrderItem
 from django.http import HttpResponse
 from django.contrib.auth.models import Group, User
 # from .forms import SingUpForm
@@ -66,8 +66,62 @@ def cart_detail(request, total=0, counter=0, cart_items=0):
         try:
             token = request.POST['stripeToken']
             email = request.POST['stripeEmail']
+            billingName = request.POST['stripeBillingName']
+            billingAddress1 = request.POST['stripeBillingAddressLine1']
+            billingCity = request.POST['stripeBillingAddressCity']
+            billingPostcode = request.POST['stripeBillingAddressZip']
+            billingCountry = request.POST['stripeBillingAddressCountryCode']
+            shippingName = request.POST['stripeShippingName']
+            shippingAddress1 = request.POST['stripeShippingAddressLine1']
+            shippingCity = request.POST['stripeShippingAddressCity']
+            shippingPostcode = request.POST['stripeShippingAddressZip']
+            shippingCountry = request.POST['stripeShippingAddressCountryCode']
             customer = stripe.Customer.create(email=email, source=token)
-            charge = stripe.Charge.create(amount=stripe_total, currency='usd',description=description, customer=customer.id)
+            charge = stripe.Charge.create(
+                amount=stripe_total,
+                currency='usd',description=description,
+                customer=customer.id
+            )
+
+            # Creating the order
+            try:
+                order_details = Order.objects.create(
+                    token=token,
+                    total=total,
+                    emailAddress=email,
+                    billingName=billingName,
+                    billingAddress1=billingAddress1,
+                    billingCity=billingCity,
+                    billingPostcode=billingPostcode,
+                    billingCountry=billingCountry,
+                    shippingName=shippingName,
+                    shippingAddress1=shippingAddress1,
+                    shippingCity=shippingCity,
+                    shippingPostcode=shippingPostcode,
+                    shippingCountry=shippingCountry
+                )
+                order_details.save()
+                for order_item in cart_items:
+                    or_item= OrderItem.objects.create(
+                        product=order_item.product.name,
+                        quantity=order_item.quantity,
+                        price=order_item.product.price,
+                        order=order_details
+                    )
+                    or_item.save()
+                     # reducing the stock
+                    products = Product.objects.get(id=order_item.product.id)
+                    products.stock = int(order_item.product.stock - order_item.quantity)
+                    products.save()
+                    order_item.delete()
+
+                    # print a message when the order is created
+                    print('the order has been created')
+                # return redirect('thanks_page', order_details.id) # issues with redirecting to thank you page, still working on this
+                return redirect('home')
+            except ObjectDoesNotExist:
+                pass
+
         except stripe.error.CardError as e:
             return False, e
 
@@ -105,3 +159,8 @@ def cart_remove_product(request, product_id):
 #     else:
 #         form = SingUpForm()
 #     return render(request, 'signup.html', {'form':form})
+
+def thanks_page(request, order_id):
+    if order_id:
+        customer_order = get_object_or_404(Order, id=order_id)
+    return render(request, 'thank_you.html', {'customer_order':customer_order})
