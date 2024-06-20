@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store',
     'stripe',
+    'crispy_forms'
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 # these keys are unique to each account
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51PToGM07iTedKWd2lEvll5tUgrzQq4Gm0aoOxrRBokdABtfMwP2c0zVu4tVfPDuTeUA27By18Anb0zSt5wyQ8QWg00QM9tFQEc'
 STRIPE_SECRET_KEY = 'sk_test_51PToGM07iTedKWd2SlM6TfPplBM0jzGiCumlSqJgxRnatqKB1Lejnkjzf26x1vEFfpCfVrELGVNLKzI1dOYMXVKb00cCkc1sMu'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
